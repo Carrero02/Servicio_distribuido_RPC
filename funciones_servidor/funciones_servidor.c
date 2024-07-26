@@ -116,7 +116,7 @@ int get_value(int key, char *value1, int *N_value2, double *V_value2)
     // 31 spaces (one for each double) + one new line
     // In total, 32 * 24 + 31 = 799 characters
     char doubles_vector[800];
-    char value1_file[256];
+    char *value1_file = (char *)malloc(256);
     int N_value2_file;
     double V_value2_file[32];
 
@@ -146,6 +146,8 @@ int get_value(int key, char *value1, int *N_value2, double *V_value2)
             return 0;
         }
     }
+
+    printf("Value got\n");
 
     // If the key is not found, return -1
     fclose(file);

@@ -9,7 +9,6 @@ Header for the message structure for the message queue
 
 #define MAX 256
 
-
 // Request message
 
 typedef struct {
@@ -18,7 +17,7 @@ typedef struct {
     char value1[MAX];       /* Value1 of the message */
     int N_value2;           /* Number of elements in the vector */
     double V_value2[32];    /* Vector of doubles */
-    char q_name[MAX];       /* Name of the client queue (the client that sends the message) */
+    int client_sd;          /* Socket descriptor of the client */
 } Request;
 
 // Response message

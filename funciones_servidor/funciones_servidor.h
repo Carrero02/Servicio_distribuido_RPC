@@ -2,7 +2,6 @@
 #define FUNCIONES_SERVIDOR_H
 
 #define FILE_NAME "tuplas.txt"
-#define SERVER_QUEUE_NAME "/mq_server"
 
 enum OPERATION_CODE {INIT, SET_VALUE, GET_VALUE, MODIFY_VALUE, DELETE_KEY, EXIST};
 

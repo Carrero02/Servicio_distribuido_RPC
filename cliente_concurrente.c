@@ -8,13 +8,12 @@
 
 
 void end(int sig){
-    // Unlink the client queue
-    char client_queue_name[256];
-    sprintf(client_queue_name, "/mq_client_%u", getpid());
-    if (mq_unlink(client_queue_name) == -1){
-        perror("Error unlinking the client queue");
-    }
-    exit(0);  
+    // Signal handler for the SIGINT signal (Ctrl+C)
+
+    printf("Exiting the client...\n");
+
+    // Exit the program    
+    exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -30,6 +29,8 @@ int main(int argc, char *argv[])
     char value1_get[256];
     int N_value2_get;
     double V_value2_get[32];
+
+    int error;
 
     // Infinite loop
     while (1)
@@ -52,21 +53,54 @@ int main(int argc, char *argv[])
         N_value2 = rand() % 32 + 1; // Random number between 1 and 32
         for (int i = 0; i < N_value2; i++)
         {
-            V_value2[i] = (double)rand() / RAND_MAX;
+            // Random integer part and random decimal part
+            V_value2[i] = (double)rand() + (double)rand() / RAND_MAX;
         }
-        while (set_value(key, value1, N_value2, V_value2) == -1)
+
+        error = set_value(key, value1, N_value2, V_value2);
+        if (error == -2)    // Communication error
         {
-            delete_key(key);
+            return -1;
         }
+        while (error == -1) // Key already exists
+        {
+            if (delete_key(key) == -2)  // Communication error
+            {
+                return -1;
+            }
+            printf("Key %d deleted\n", key);
+            error = set_value(key, value1, N_value2, V_value2);
+            if (error == -2)    // Communication error
+            {
+                return -1;
+            }
+        }
+        printf("Key %d added\n", key);
         // Sleep one second
         // sleep(1);
 
         // Try to get the recently added key
         // If it does not exist, try again
-        while (get_value(key, value1_get, &N_value2_get, V_value2_get) == -1)
+        error = get_value(key, value1_get, &N_value2_get, V_value2_get);
+        if (error == -2)
         {
-            set_value(key, value1, N_value2, V_value2);
+            return -1;
         }
+        while (error == -1)
+        {
+            if (set_value(key, value1, N_value2, V_value2) == -2)
+            {
+                return -1;
+            }
+            printf("Key %d added\n", key);
+
+            error = get_value(key, value1_get, &N_value2_get, V_value2_get);
+            if (error == -2)
+            {
+                return -1;
+            }
+        }
+        printf("Key %d obtained\n", key);
         // Sleep one second
         // sleep(1);
 
@@ -76,21 +110,54 @@ int main(int argc, char *argv[])
         N_value2 = rand() % 32 + 1;
         for (int i = 0; i < N_value2; i++)
         {
-            V_value2[i] = (double)rand() / RAND_MAX;
+            V_value2[i] = (double)rand() + (double)rand() / RAND_MAX;
         }
-        while (modify_value(key, value1, N_value2, V_value2) == -1)
+
+        error = modify_value(key, value1, N_value2, V_value2);
+        if (error == -2)
         {
-            set_value(key, value1, N_value2, V_value2);
+            return -1;
         }
+        while (error == -1)
+        {
+            if (set_value(key, value1, N_value2, V_value2) == -2)
+            {
+                return -1;
+            }
+            printf("Key %d added\n", key);
+
+            error = modify_value(key, value1, N_value2, V_value2);
+            if (error == -2)
+            {
+                return -1;
+            }
+        }
+        printf("Key %d modified\n", key);
         // Sleep one second
         // sleep(1);
 
         // Try to get the recently modified key
         // If it does not exist, try again
-        while (get_value(key, value1_get, &N_value2_get, V_value2_get) == -1)
+        error = get_value(key, value1_get, &N_value2_get, V_value2_get);
+        if (error == -2)
         {
-            set_value(key, value1, N_value2, V_value2);
+            return -1;
         }
+        while (error == -1)
+        {
+            if (set_value(key, value1, N_value2, V_value2) == -2)
+            {
+                return -1;
+            }
+            printf("Key %d added\n", key);
+
+            error = get_value(key, value1_get, &N_value2_get, V_value2_get);
+            if (error == -2)
+            {
+                return -1;
+            }
+        }
+        printf("Key %d obtained\n", key);
         // Sleep one second
         // sleep(1);
     }

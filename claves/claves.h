@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include <sys/stat.h>   /* For mode constants */
 #include <string.h>
-#include <mqueue.h>     /* For Message Queues */
 #include <pthread.h>    /* For threads */
 #include <unistd.h>     /* For getpid() */
 #include <errno.h>      /* For errno */
+#include <netdb.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
 
-#include "../mensaje.h"
-
-#define SERVER_QUEUE_NAME "/mq_server"
-#define MAX_RETRIES 5
+#define LOCALHOST "127.0.0.1"
 
 
 /**
