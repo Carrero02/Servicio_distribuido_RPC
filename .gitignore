@@ -1,0 +1,11 @@
+/libclaves.so
+.vscode
+cliente.out
+servidor.out
+tuplas.txt
+claves/claves.o
+cliente_concurrente.out
+cliente_tests.out
+temp_file.txt
+libserverclaves.so
+funciones_servidor/funciones_servidor.o
